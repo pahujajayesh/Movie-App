@@ -4,17 +4,9 @@ import { createStore } from 'redux';
 
 import './index.css';
 import App from './Components/App';
-import movies from './reducers';
+import rootReducer from './reducers';
 
-const store=createStore(movies);
-console.log('Store',store);
-// console.log('Store BEFORE',store.getState());
-
-// store.dispatch({
-//   type:'ADD_MOVIES',
-//   movies:[{name:'superman'}]
-// })
-// console.log('Store After',store.getState());
+const store=createStore(rootReducer);
 
 ReactDOM.render(
   <React.StrictMode>
