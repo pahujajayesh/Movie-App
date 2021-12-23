@@ -1,4 +1,5 @@
-import React, { createContext } from 'react';
+import React from 'react';
+import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom';
 import { createStore,applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -29,55 +30,55 @@ const logger=({dispatch,getState})=>(next)=>(action)=>{
 //   next(action);
 // };
 const store=createStore(rootReducer,applyMiddleware(logger,thunk));
-export const storeContext=createContext();
-console.log('storeContext',storeContext);
+// export const storeContext=createContext();
+// console.log('storeContext',storeContext);
 
-class Provider extends React.Component{
-  render(){
-    const{store}=this.props;
-    return ( 
-    <storeContext.Provider value={store}>
-      {this.props.children}
-    </storeContext.Provider>
-    )
-  }
-}
-export function connect(callback) {
-  return function (Component) {
-    class ConnectedComponent extends React.Component {
-      constructor(props) {
-        super(props);
-        this.unsubscribe = this.props.store.subscribe(() => {
-          this.forceUpdate();
-        });
-      }
+// class Provider extends React.Component{
+//   render(){
+//     const{store}=this.props;
+//     return ( 
+//     <storeContext.Provider value={store}>
+//       {this.props.children}
+//     </storeContext.Provider>
+//     )
+//   }
+// }
+// export function connect(callback) {
+//   return function (Component) {
+//     class ConnectedComponent extends React.Component {
+//       constructor(props) {
+//         super(props);
+//         this.unsubscribe = this.props.store.subscribe(() => {
+//           this.forceUpdate();
+//         });
+//       }
 
-      componentWillUnmount() {
-        this.unsubscribe();
-      }
-      render() {
-        const { store } = this.props;
-        const state = store.getState();
-        const dataToBeSentAsProps = callback(state);
+//       componentWillUnmount() {
+//         this.unsubscribe();
+//       }
+//       render() {
+//         const { store } = this.props;
+//         const state = store.getState();
+//         const dataToBeSentAsProps = callback(state);
 
-        return <Component dispatch={store.dispatch} {...dataToBeSentAsProps} />;
-      }
-    }
+//         return <Component dispatch={store.dispatch} {...dataToBeSentAsProps} />;
+//       }
+//     }
 
-    class ConnectedComponentWrapper extends React.Component {
-      render() {
-        return (
-          <storeContext.Consumer>
-            {(store) => {
-              return <ConnectedComponent store={store} />;
-            }}
-          </storeContext.Consumer>
-        );
-      }
-    }
-    return ConnectedComponentWrapper;
-  };
-}
+//     class ConnectedComponentWrapper extends React.Component {
+//       render() {
+//         return (
+//           <storeContext.Consumer>
+//             {(store) => {
+//               return <ConnectedComponent store={store} />;
+//             }}
+//           </storeContext.Consumer>
+//         );
+//       }
+//     }
+//     return ConnectedComponentWrapper;
+//   };
+// }
 ReactDOM.render(
   <React.StrictMode>
    <Provider store={store}>
