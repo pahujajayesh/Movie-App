@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import { createStore,applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 
-import './index.css';
 import App from './Components/App';
 import rootReducer from './reducers';
+import './index.css';
 
 // const logger=function({}dispatch,getState){
 //   return function(next){
@@ -42,7 +42,42 @@ class Provider extends React.Component{
     )
   }
 }
+export function connect(callback) {
+  return function (Component) {
+    class ConnectedComponent extends React.Component {
+      constructor(props) {
+        super(props);
+        this.unsubscribe = this.props.store.subscribe(() => {
+          this.forceUpdate();
+        });
+      }
 
+      componentWillUnmount() {
+        this.unsubscribe();
+      }
+      render() {
+        const { store } = this.props;
+        const state = store.getState();
+        const dataToBeSentAsProps = callback(state);
+
+        return <Component dispatch={store.dispatch} {...dataToBeSentAsProps} />;
+      }
+    }
+
+    class ConnectedComponentWrapper extends React.Component {
+      render() {
+        return (
+          <storeContext.Consumer>
+            {(store) => {
+              return <ConnectedComponent store={store} />;
+            }}
+          </storeContext.Consumer>
+        );
+      }
+    }
+    return ConnectedComponentWrapper;
+  };
+}
 ReactDOM.render(
   <React.StrictMode>
    <Provider store={store}>
